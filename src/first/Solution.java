@@ -1,17 +1,23 @@
 package first;
 
 public class Solution {
-    private static final double[] COEFFS = {1, 0, (double) 2/3, 0, -3, -5};
-    private static final double a = 0.0001;
-    private static final double b = 5;
-    private static final double u = 0.05;
-    private static final double eps = 0.001;
+    private static final double[] COEFFS = {1, 0, (double) 1/3, 0, -4, -4};
+    private static double a = 0.002;
+    private static double b = 2;
+    private static double u = 0.05;
+    private static double eps = 0.001;
 
     public static void main(String[] args) {
+/*        a = UserInput.getDouble("a");
+        b = UserInput.getDouble("b");
+        u = UserInput.getDouble("u");
+        eps = UserInput.getDouble("eps");*/
+
         System.out.println(checkInterval(a, b));
+
         Solution.dividingByHalf(a, b, 0.0001, eps);
         Solution.goldenSection(a, b, eps);
-        Solution.parabola(0.0001, 5, 0.001);
+        Solution.parabola(a, b, eps);
         Solution.newton(u, eps);
     }
 
@@ -106,26 +112,35 @@ public class Solution {
         int i = 0;
         double u2Check = u2;
 
-        double deltaPlus = function(u1) - function(u2);
-        double deltaMinus = function(u3) - function(u2);
+        double deltaMinus = function(u1) - function(u2);
+        double deltaPlus = function(u3) - function(u2);
 
         double w = u2 + ((((Math.pow((u3 - u2), 2)) * deltaMinus) - ((Math.pow((u2 - u1), 2)) * deltaPlus))
                 / (2 * (((u3 - u2) * deltaMinus) + ((u2 - u1) * deltaPlus))));
 
-        while (Math.abs(u2Check - w) >= eps) {
+        while (Math.abs(u2Check - w) >= eps && i < 1000000) {
             i++;
 
             deltaMinus = function(u1) - function(u2);
             deltaPlus = function(u3) - function(u2);
 
-            if ((deltaPlus + deltaMinus) == 0) {
+/*            if ((deltaPlus + deltaMinus) == 0) {
+                throw new ArithmeticException();
+            }*/
+/*
+            if (deltaMinus < 0 || deltaPlus <= 0 || deltaMinus + deltaPlus <= 0) {
                 throw new ArithmeticException();
             }
+*/
 
             w = u2 + ((((Math.pow((u3 - u2), 2)) * deltaMinus) - ((Math.pow((u2 - u1), 2)) * deltaPlus))
                     / (2 * (((u3 - u2) * deltaMinus) + ((u2 - u1) * deltaPlus))));
 
             u2Check = u2;
+
+//            System.out.println("u3 " + u3);
+/*            System.out.println("w " + w);
+            System.out.println("u2 " + u2);*/
 
             if (w < u2) {
                 if (function(w) < function(u2)) {
@@ -142,6 +157,8 @@ public class Solution {
                     }
                 }
             } else if (w > u2) {
+/*                System.out.println("w " + function(w));
+                System.out.println("u2 " + function(u2));*/
                 if (function(w) < function(u2)) {
                     u1 = u2;
                     u2 = w;
@@ -166,7 +183,9 @@ public class Solution {
 
         System.out.println("Parabola: ");
         System.out.println("Point: " + u2 + " Function: " + function(u2));
+        System.out.println("u3 : Point: " + u3 + " Function: " + function(u3));
         System.out.println("Number of iterations: " + i);
+        System.out.println();
     }
 
     private static void newton(double x, double eps) {
@@ -174,13 +193,7 @@ public class Solution {
 
         while (Math.abs(diffFirst(x)) > eps) {
             i++;
-/*            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println(diffSecond(x));*/
+//            System.out.println(diffSecond(x));
             if (diffSecond(x) == 0) {
                 x += 0.1;
                 continue;
@@ -192,12 +205,14 @@ public class Solution {
         System.out.println("Newton: ");
         System.out.println("Point: " + x + " Function: " + function(x));
         System.out.println("Number of iterations: " + i);
+        System.out.println();
     }
 
     private static boolean checkInterval(double a, double b) {
-        double step = (b - a) / 50000;
+        double step = (b - a) / 100000;
 
         for (double i = a; i < b; i += step) {
+//            System.out.println(diffFirst(i));
 //            System.out.println(diffSecond(i));
             if (diffSecond(i) < 0) {
                 return false;
