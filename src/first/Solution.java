@@ -1,9 +1,9 @@
 package first;
 
 public class Solution {
-    private static final double[] COEFFS = {1, 0, (double) 1/3, 0, -4, -4};
-    private static double a = 0.002;
-    private static double b = 2;
+    private static final double[] COEFFS = {1, 0, (double) 2/3, 0, -3, -5};
+    private static double a = 0;
+    private static double b = 3;
     private static double u = 0.05;
     private static double eps = 0.001;
 
@@ -13,12 +13,12 @@ public class Solution {
         u = UserInput.getDouble("u");
         eps = UserInput.getDouble("eps");*/
 
-        System.out.println(checkInterval(a, b));
-
-        Solution.dividingByHalf(a, b, 0.0001, eps);
-        Solution.goldenSection(a, b, eps);
-        Solution.parabola(a, b, eps);
-        Solution.newton(u, eps);
+        if (checkInterval(a,b)) {
+            bisection(a, b, 0.0001, eps);
+            goldenSection(a, b, eps);
+            parabola(a, b, eps);
+            newton(u, eps);
+        }
     }
 
     public static double function(double x) {
@@ -36,7 +36,7 @@ public class Solution {
                 6 * COEFFS[2] * x + 2 * COEFFS[3];
     }
 
-    public static void dividingByHalf(double a, double b, double beta, double eps) {
+    public static void bisection(double a, double b, double beta, double eps) {
         int i = 0;
 
         while (Math.abs(b - a) >= eps) {
@@ -57,7 +57,7 @@ public class Solution {
             }
         }
 
-        System.out.println("Dividing by half: ");
+        System.out.println("Bisection: ");
         System.out.println("Point: " + ((b + a) / 2) + " Function: " + function((b + a) / 2));
         System.out.println("Number of iterations: " + i);
         System.out.println();
@@ -118,29 +118,16 @@ public class Solution {
         double w = u2 + ((((Math.pow((u3 - u2), 2)) * deltaMinus) - ((Math.pow((u2 - u1), 2)) * deltaPlus))
                 / (2 * (((u3 - u2) * deltaMinus) + ((u2 - u1) * deltaPlus))));
 
-        while (Math.abs(u2Check - w) >= eps && i < 1000000) {
+        while (Math.abs(u2Check - w) >= eps) {
             i++;
 
             deltaMinus = function(u1) - function(u2);
             deltaPlus = function(u3) - function(u2);
 
-/*            if ((deltaPlus + deltaMinus) == 0) {
-                throw new ArithmeticException();
-            }*/
-/*
-            if (deltaMinus < 0 || deltaPlus <= 0 || deltaMinus + deltaPlus <= 0) {
-                throw new ArithmeticException();
-            }
-*/
-
             w = u2 + ((((Math.pow((u3 - u2), 2)) * deltaMinus) - ((Math.pow((u2 - u1), 2)) * deltaPlus))
                     / (2 * (((u3 - u2) * deltaMinus) + ((u2 - u1) * deltaPlus))));
 
             u2Check = u2;
-
-//            System.out.println("u3 " + u3);
-/*            System.out.println("w " + w);
-            System.out.println("u2 " + u2);*/
 
             if (w < u2) {
                 if (function(w) < function(u2)) {
@@ -157,8 +144,6 @@ public class Solution {
                     }
                 }
             } else if (w > u2) {
-/*                System.out.println("w " + function(w));
-                System.out.println("u2 " + function(u2));*/
                 if (function(w) < function(u2)) {
                     u1 = u2;
                     u2 = w;
@@ -183,7 +168,6 @@ public class Solution {
 
         System.out.println("Parabola: ");
         System.out.println("Point: " + u2 + " Function: " + function(u2));
-        System.out.println("u3 : Point: " + u3 + " Function: " + function(u3));
         System.out.println("Number of iterations: " + i);
         System.out.println();
     }
@@ -193,7 +177,6 @@ public class Solution {
 
         while (Math.abs(diffFirst(x)) > eps) {
             i++;
-//            System.out.println(diffSecond(x));
             if (diffSecond(x) == 0) {
                 x += 0.1;
                 continue;
@@ -212,9 +195,8 @@ public class Solution {
         double step = (b - a) / 100000;
 
         for (double i = a; i < b; i += step) {
-//            System.out.println(diffFirst(i));
-//            System.out.println(diffSecond(i));
             if (diffSecond(i) < 0) {
+                System.out.println("Отрезок не является унимодальным");
                 return false;
             }
         }
